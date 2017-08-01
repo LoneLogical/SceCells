@@ -25,12 +25,20 @@ __constant__ double F_Ext_Incline_M2 ;  //Ali
 //Ali &  Abu June 30th
 __device__
 double calMembrForce_Mitotic(double& length, double& progress, double mitoticCri) {
+	double beta = 15;
+	if (length < membrEquLen) {
+		beta = -15;
+	}
+	double stiff;
 	if (progress <= mitoticCri) {
-		return (length - membrEquLen) * membrStiff;
-		} else {
- 		return (length - membrEquLen) *(membrStiff+ (membrStiff_Mitotic-membrStiff)* (progress-mitoticCri)/(1.0-mitoticCri));
- 
-         }
+		stiff = membrStiff;
+	}
+	else {
+ 		stiff = membrStiff + (membrStiff_Mitotic-membrStiff)* (progress-mitoticCri)/(1.0-mitoticCri);
+    }
+
+	return ( ((length - membrEquLen) * stiff) + (beta * stiff * (length - membrEquLen) * (length - membrEquLen)));
+
 
 }
 //
